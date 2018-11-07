@@ -4,6 +4,8 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,9 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -27,9 +31,13 @@ public class AlarmFragment extends MainFragment {
     private String mParam2;
     private FloatingActionButton alarmButton;
     private EditText text;
+    private RecyclerView recyclerView;
+    private MyAdapter myAdapter;
+    private ArrayList<Header>  headers = new ArrayList<>();
 
     public AlarmFragment() {
         // Required empty public constructor
+
     }
 
     /**
@@ -73,7 +81,11 @@ public class AlarmFragment extends MainFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_alarm, container, false);
         alarmButton = view.findViewById(R.id.addAlarm);
-        text = view.findViewById(R.id.txt1);
+        recyclerView = view.findViewById(R.id.recyclerview);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(manager);
+        myAdapter = new MyAdapter(headers);
+        recyclerView.setAdapter(myAdapter);
         alarmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,11 +103,22 @@ public class AlarmFragment extends MainFragment {
             TimePickerDialog pickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss a");
+                    SimpleDateFormat format = new SimpleDateFormat("hh:mm");
+                    SimpleDateFormat format1 = new SimpleDateFormat("a");
+                    SimpleDateFormat format2 = new SimpleDateFormat("dd.MM.yy");
+                    /*String day = format2.format(calendar.getTime());
+                    try {
+                        calendar.setTime(format2.parse(day));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }*/
+                    calendar.add(Calendar.DAY_OF_MONTH,1);
                     calendar.set(Calendar.MINUTE, minute);
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    headers.add(new Header(format.format(calendar.getTime()),format1.format(calendar.getTime()),format2.format(calendar.getTime())));
 
-                    text.setText(format.format(calendar.getTime()));
+                    myAdapter = new MyAdapter(headers);
+                    recyclerView.setAdapter(myAdapter);
                 }
             },hora,min,false);
             pickerDialog.show();

@@ -26,7 +26,7 @@ public class ViewPageFragment extends MainFragment {
         viewPager = rootView.findViewById(R.id.viewpager);
         ViewPageAdapter adapter = new ViewPageAdapter(getChildFragmentManager());
         adapter.addFragment(new AlarmFragment(),"Alarma");
-        adapter.addFragment(new RelogFragment(),"Relog");
+        adapter.addFragment(new RelogFragment(),"Reloj");
         adapter.addFragment(new TimerFragment(),"Tempo");
         adapter.addFragment(new CronometroFragment(),"Cronometro");
         viewPager.setAdapter(adapter);
