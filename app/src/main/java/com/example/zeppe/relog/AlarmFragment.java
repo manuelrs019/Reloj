@@ -72,7 +72,7 @@ public class AlarmFragment extends MainFragment {
     @Override
     public void onResume() {
         super.onResume();
-        fragmentActions.changeTitle("alarma");
+
     }
 
     @Override
@@ -116,7 +116,6 @@ public class AlarmFragment extends MainFragment {
                     calendar.set(Calendar.MINUTE, minute);
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     headers.add(new Header(format.format(calendar.getTime()),format1.format(calendar.getTime()),format2.format(calendar.getTime())));
-
                     myAdapter = new MyAdapter(headers);
                     recyclerView.setAdapter(myAdapter);
                 }

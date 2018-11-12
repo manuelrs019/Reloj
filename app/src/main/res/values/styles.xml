@@ -10,4 +10,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Toolbarstyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:actionMenuTextColor">@android:color/white</item>
+        <item name="android:textSize">15dp</item>
+    </style>
+
 </resources>
