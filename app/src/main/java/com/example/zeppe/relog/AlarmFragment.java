@@ -1,17 +1,26 @@
 package com.example.zeppe.relog;
 
+import android.app.AlarmManager;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.example.zeppe.relog.Controlador.Conexion;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,11 +35,12 @@ public class AlarmFragment extends MainFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private static final String TAG = "AlarmFragment";
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private FloatingActionButton alarmButton;
-    private EditText text;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
     private ArrayList<Header>  headers = new ArrayList<>();
@@ -72,7 +82,6 @@ public class AlarmFragment extends MainFragment {
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -92,12 +101,13 @@ public class AlarmFragment extends MainFragment {
                 addAlarm(v);
             }
         });
+        cargarAlarmas();
         return view;
     }
 
-    public void addAlarm(View view){
+    public void addAlarm(final View v){
         final Calendar calendar = Calendar.getInstance();
-        if(view == alarmButton){
+        if(v == alarmButton){
             int hora = calendar.get(android.icu.util.Calendar.HOUR);
             int min= calendar.get(Calendar.MINUTE);
             TimePickerDialog pickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
@@ -106,22 +116,39 @@ public class AlarmFragment extends MainFragment {
                     SimpleDateFormat format = new SimpleDateFormat("hh:mm");
                     SimpleDateFormat format1 = new SimpleDateFormat("a");
                     SimpleDateFormat format2 = new SimpleDateFormat("dd.MM.yy");
-                    /*String day = format2.format(calendar.getTime());
-                    try {
-                        calendar.setTime(format2.parse(day));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }*/
-                    calendar.add(Calendar.DAY_OF_MONTH,1);
+                    //calendar.add(Calendar.DAY_OF_MONTH,1);
                     calendar.set(Calendar.MINUTE, minute);
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     headers.add(new Header(format.format(calendar.getTime()),format1.format(calendar.getTime()),format2.format(calendar.getTime())));
                     myAdapter = new MyAdapter(headers);
                     recyclerView.setAdapter(myAdapter);
+                    Conexion c = new Conexion(getContext(),"alarmas",null,1);
+                    SQLiteDatabase bd = c.getWritableDatabase();
+                    String hora= format.format(calendar.getTime());
+                    String ampm = format1.format(calendar.getTime());
+                    String fecha = format2.format(calendar.getTime());
+                    ContentValues values = new ContentValues();
+                    values.put("hora",hora);
+                    values.put("dias",fecha);
+                    values.put("ampm",ampm);
+                    bd.insert("alarmas",null,values);
+                    Snackbar.make(v,"Alarma agregada",Snackbar.LENGTH_SHORT).show();
                 }
+
             },hora,min,false);
             pickerDialog.show();
         }
+
+    }
+
+    public void cargarAlarmas(){
+        Conexion c = new Conexion(getContext(),"alarmas",null,1);
+        SQLiteDatabase bd = c.getWritableDatabase();
+        Cursor cursor = bd.rawQuery("select hora,dias,ampm from alarmas",null);
+        while (cursor.moveToNext()){
+            headers.add(new Header(cursor.getString(0),cursor.getString(2),cursor.getString(1)));
+        }
+
     }
 
 }

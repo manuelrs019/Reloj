@@ -44,6 +44,7 @@ public class ViewPageFragment extends MainFragment {
         adapter.addFragment(new TimerFragment(),"Temporizador");
         adapter.addFragment(new CronometroFragment(),"Cronometro");
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(4);
         tabLayout = rootView.findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         
